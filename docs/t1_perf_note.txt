@@ -1,0 +1,12 @@
+==== T1 Perf Note ====
+Tool: httpx ASGITransport (in-process) paced 100 QPS for 10s
+Endpoint: GET /signal?symbol=XYZ
+requests: 1000
+success: 1000
+errors: 0
+duration_s: 10.002103400067426
+achieved_qps: 99.97897042268717
+min_ms: 0.2677000593394041
+mean_ms: 0.6283680978231132
+p95_ms: 0.9364999132230878
+max_ms: 6.11009995918721
