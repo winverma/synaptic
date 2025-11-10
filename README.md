@@ -53,7 +53,6 @@ uvicorn src.main:app --host 0.0.0.0 --port 8000
 | **`tests/`** | Unit tests for T1 (indicators/endpoints) and the T2 **deterministic test**. | T1, T2 |
 | **`docs/`** | **Mandatory Documentation:** `README.md`, `DESIGN.md`, `VERIFICATION.md`. | T1, T3, T4 |
 | **`docs/ai-logs.txt`** | Raw prompt logs used with AI assistants. | All |
-| **`run.sh`** | Single execution script. | All |
 
 ## 🔎 Key Verification Files
 
