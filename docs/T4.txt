@@ -1,0 +1,36 @@
+T4. Learning Sprint (Options & Microstructure)
+A. Microstructure Failure Mode and Mitigation
+Failure Mode: Naive Close-Price Fills Ignoring Order Book Depth.
+A backtest that assumes execution at the bar’s last trade price overstates available liquidity and understates slippage, especially when the strategy’s trade size is large relative to the bar’s volume. This prevents the backtest from capturing the real-world effect of market impact, where a large order walks the book, resulting in an average fill price worse than the last print.
+Mitigation (Implementation Add-on): Volume Participation + Market Impact Model.
+Model: Define Average Daily Volume (ADV) for the instrument. For each trade request, compute the participation ratio ($qty / ADV$).
+Execution Rule: Apply an impact markup (in basis points or ticks) that is non-linearly proportional to the participation ratio. For example, excess quantity beyond a defined participation cap (e.g., $5\%$ of bar volume) is forced to fill at a penalized price.
+Hook Point: This logic replaces the existing fixed one-tick slippage block inside the execution function (e.g., _exec method) in backtest_runner.py.
+
+B. Simple Slippage Model (Adaptive)
+Model: Volatility + Participation Adjusted Slippage.
+This model makes slippage dynamic by accounting for how chaotic the market is (volatility) and how large the order is (participation).
+Formula (Conceptual):
+Slippage Cost $\approx$ (Base Tick Cost) $+$ $k_{vol} \times \sigma_{intraday} \times (\text{qty} / \text{ADV})^{\alpha}$
+$\sigma_{intraday}$ is the realized volatility (e.g., the bar's high-low range).
+$(\text{qty} / \text{ADV})^{\alpha}$ provides a non-linear scaling of impact based on order size.
+Integration Point:
+The calculation is implemented inside the execution function (_exec) in backtest_runner.py. Pre-calculated parameters ($\text{ADV}$ and $\sigma_{intraday}$) are passed to the function, and the resulting slip\_amount is applied to the market order price.
+Python
+# Conceptual code hook inside _exec in backtest_runner.py
+participation = qty / max(adv, 1.0)
+vol_component = k_vol * sigma_intraday * participation**alpha
+slip_amount = slip_ticks * tick_size # slip_ticks based on 1 + vol_component
+fill_price = price + slip_amount if side == "BUY" else price - slip_amount
+
+
+C. Options Spread Sanity Checks
+Two critical checks before live trading a multi-leg options spread:
+Bid–Ask Width & Combined Entry Cost Check:
+Check: Verify each leg’s effective spread cost (difference between achievable fill price and mid-price) and the net entry debit/credit for the entire spread.
+Action: Reject the trade if the total net entry cost is outside a tight tolerance (e.g., total spread cost $leq 3%$ of the maximum potential payoff) versus the theoretical model value. This prevents deploying strategies into markets that are too illiquid or mispriced.
+Risk Greeks & Margin Consistency Check:
+Check: Compute the net aggregate Greeks ($\Delta$, $\Gamma$, $\text{Vega}$, $\Theta$) of the new spread combined with existing portfolio exposure. Then, confirm the projected margin requirement (SPAN/broker calculation) aligns with internal risk budgets.
+Action: Abort deployment if the aggregate Net Delta or Net Gamma exceeds predefined risk limits or if a shock scenario shows the margin stress exceeds capital allocation.
+
+Citations: Logic location in existing runner (backtest_runner.py, DESIGN.md); relates to schema tables (orders, positions) for referencing existing exposure (see t3_schema.sql design rationale).
