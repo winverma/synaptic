@@ -7,17 +7,8 @@
 make run
  OR
  bash run.sh
+
  
-
-## 🔗 Submission Details
-
-| Field | Value |
-| :--- | :--- |
-| **Google Doc Link (Full Submission)** | **[Insert Google Doc View Link Here]** |
-| **Candidate Name** | **\<Your Name\>** |
-| **Date** | **\<YYYY-MM-DD\>** |
-| **Phase 1 Time Log** | **5.5 hours** (Below the 6-hour cap) |
-
 ## 🚀 Quick Start: Single Command Execution
 
 The entire project (install, test, and run the service) is executed via a single command from a clean clone.
