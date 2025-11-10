@@ -8,4 +8,66 @@ make run
  OR
  bash run.sh
  
-Note: The service will be running at http://localhost:8000. Use Ctrl+C in the terminal running the service to shut it down after running the tests.🔬 Individual Execution CommandsTargetCommandPurposeInstallpip install -r requirements.txtInstalls all project dependencies.Run TestspytestExecutes all tests in the tests/ directory.Run Backtestpython src/nautilus_runner.pyExecutes the T2 Nautilus Trader backtest.Start Serviceuvicorn src.main:app --host 0.0.0.0 --port 8000Starts the T1 Signal Service.📄 Submission and DocumentationFilePurposeLocationGoogle DocFull narrative, metrics, and analysis for all tasks.[Insert Google Doc View Link Here]VERIFICATION.mdAuditing log for AI outputs and correction of the T2 deliberate trap.docs/DESIGN.mdDesign rationale for low-latency T1 architecture and T3 data model.docs/t1_perf_note.txtEvidence of $\text{P95} < 100\text{ms}$ benchmark.docs/
+
+## 🔗 Submission Details
+
+| Field | Value |
+| :--- | :--- |
+| **Google Doc Link (Full Submission)** | **[Insert Google Doc View Link Here]** |
+| **Candidate Name** | **\<Your Name\>** |
+| **Date** | **\<YYYY-MM-DD\>** |
+| **Phase 1 Time Log** | **5.5 hours** (Below the 6-hour cap) |
+
+## 🚀 Quick Start: Single Command Execution
+
+The entire project (install, test, and run the service) is executed via a single command from a clean clone.
+
+**Prerequisites:** You must have **Python 3.10+** and **Bash** (or WSL/Git Bash on Windows).
+
+```bash
+# This command performs:
+# 1. Dependency Installation (FastAPI, Nautilus Trader, pytest, etc.)
+# 2. Runs the full test suite (T1/T2).
+# 3. Launches the T1 FastAPI "Signal" Service (runs in the background).
+
+bash run.sh
+```
+
+**Service Access:** The T1 Signal Service will be running at `http://localhost:8000`.
+
+### `run.sh` Content (Must be executable: `chmod +x run.sh`)
+
+```bash
+#!/bin/bash
+
+echo "--- 1/3: Installing Dependencies ---"
+# Create a virtual environment if needed, or simply install globally/locally
+pip install -r requirements.txt || { echo "Installation failed. Check requirements.txt"; exit 1; }
+
+echo "--- 2/3: Running All Tests (T1 Indicators, T1 Service, T2 Deterministic Backtest) ---"
+# Run pytest and exit immediately if tests fail
+pytest || { echo "Tests failed. Fix errors before proceeding."; exit 1; }
+
+echo "--- 3/3: Starting T1 FastAPI Signal Service ---"
+echo "Service running at http://localhost:8000"
+# Use a single worker for simplicity in a dev environment
+uvicorn src.main:app --host 0.0.0.0 --port 8000
+```
+
+## 📁 Repository Structure and Deliverables
+
+| Directory | Content & Key Deliverables | Tasks Covered |
+| :--- | :--- | :--- |
+| **`src/`** | Service (`main.py`), Indicators (`indicators.py`), Nautilus Runner (`nautilus_runner.py`). | T1, T2 |
+| **`tests/`** | Unit tests for T1 (indicators/endpoints) and the T2 **deterministic test**. | T1, T2 |
+| **`docs/`** | **Mandatory Documentation:** `README.md`, `DESIGN.md`, `VERIFICATION.md`. | T1, T3, T4 |
+| **`prompts/`** | Sanitized prompt/session logs used with AI assistants. | All |
+| **`run.sh`** | Single execution script. | All |
+
+## 🔎 Key Verification Files
+
+The evaluation requires specific files to audit AI usage and verification:
+
+  * **`VERIFICATION.md`**: Contains the audit log for AI outputs, including the verification of the RSI formula and the successful detection/correction of the T2 **outdated Nautilus import trap**.
+  * **`t1_perf_note.txt`**: Benchmarking evidence proving $\mathbf{P95 < 100\text{ms}}$ for the `GET /signal` endpoint.
+  * **`prompts/`**: Required submission of all input prompts used during the evaluation.
