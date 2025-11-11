@@ -1,5 +1,7 @@
 🚀 Quick Start (One Command Execution)
+
 The entire project (setup, dependency installation, service launch, and full test suite execution) is managed by a single command.
+
 Prerequisites: You must have Python 3.10+ and Make or Bash installed.
 
 # This command will:
