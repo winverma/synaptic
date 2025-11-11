@@ -32,7 +32,61 @@ bash run.sh
 
 **Service Access:** The T1 Signal Service will be running at `http://localhost:8000`.
 
-### `run.sh` Content (Must be executable: `chmod +x run.sh`)
+
+## Windows (PowerShell)
+```powershell
+./run.ps1
+```
+
+This will:
+1. Create a virtual environment in `.venv/` if missing.
+2. Install `requirements.txt` once (cached by `installed.flag`).
+3. Run the test suite (`pytest -q`).
+4. (Unless FAST=1) Generate a deterministic backtest (`backtest_runner.py`) producing `equity_curve.csv`.
+5. (Unless FAST=1) Run a quick in‑process performance check (`perf_asgi_load_test.py`).
+6. Start the FastAPI service at `http://127.0.0.1:8000/signal`.
+
+## Optional Modes
+Skip perf & backtest for faster startup:
+```bash
+FAST=1 ./run.sh
+```
+```powershell
+$env:FAST=1; ./run.ps1
+```
+
+Run tests only (no server):
+```bash
+TEST=1 ./run.sh
+```
+```powershell
+$env:TEST=1; ./run.ps1
+```
+
+## Verification & Traceability
+See `docs/Verification.md` for full artifact mapping (indicators, service, performance, backtest, SQL schema, Nautilus scaffold) and reproduction steps.
+
+## Manual Service Launch (alternative)
+If you just want the API:
+```bash
+uvicorn main:app --host 127.0.0.1 --port 8000
+```
+PowerShell:
+```powershell
+uvicorn main:app --host 127.0.0.1 --port 8000
+```
+
+## Endpoints
+- GET `/signal` — returns latest cached trend, decision, RSI.
+- WS `/ws/signal/{symbol}` — real‑time stream with initial snapshot.
+
+## Determinism
+`backtest_runner.py` produces a repeatable equity curve from `ohlcv.csv`. Tests ensure indicator logic and service contract stability.
+
+## Next Steps (Suggested)
+- Migrate startup to FastAPI lifespan context for deprecation warnings.
+- Flesh out `nautilus_runner.py` with concrete adapters and assert final equity in tests.
+- Add linting (ruff or flake8) & type checking (mypy) for stricter CI.
 
 ```bash
 #!/bin/bash
