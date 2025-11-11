@@ -1,4 +1,8 @@
-🚀 Quick Start (One Command Execution)The entire project (setup, dependency installation, service launch, and full test suite execution) is managed by a single command.Prerequisites: You must have Python 3.10+ and Make or Bash installed.Bash# This command will:
+🚀 Quick Start (One Command Execution)
+The entire project (setup, dependency installation, service launch, and full test suite execution) is managed by a single command.
+Prerequisites: You must have Python 3.10+ and Make or Bash installed.
+
+# This command will:
 
  1. Install dependencies (FastAPI, Nautilus Trader, pytest, etc.)
  2. Run the full test suite (T1 indicators, T1 service, T2 deterministic backtest).
